@@ -281,3 +281,7 @@ Note: the `AuthContext` can be also configured without code via [dynaconf](https
 # Contributing
 
 We welcome contributions of new functions! Our goal is to help everyone accelerate their AI development timeline. If you found this project helpful for an API that was not covered, pleas feel free to submit a PR and give back!
+
+# Discord
+
+Questions? Concerns? Join our Discord at https://discord.gg/jN5ePfvV
