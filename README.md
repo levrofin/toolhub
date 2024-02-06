@@ -35,6 +35,14 @@ Why did we build this instead of just using one of the following?
 - Use a local ‘random’ syscall to enable your LLM to access random numbers
 - Use the Google Translate API to get translations ([https://rapidapi.com/googlecloud/api/google-translate1/](https://rapidapi.com/googlecloud/api/google-translate1/))
 
+# Installation!
+
+Toolhub can be installed via pip:
+
+```
+pip install toolhub@git+https://github.com/levrofin/toolhub@61b20b5ba283785525640927b6b12911b1dcd836
+```
+
 # How to use
 
 The core product of ToolHub is `toolhub.lib.hub::Hub`, which manages a set of available tools.
