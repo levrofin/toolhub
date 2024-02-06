@@ -33,20 +33,20 @@ class StandardAuthContext(AuthContext):
     @classmethod
     def from_settings(cls) -> AuthContext:
         openapi = None
-        if settings.auth.openapi:
+        if oa := settings.auth.get("openapi"):
             openapi = OpenApiAuthContext(
                 api_to_headers={
                     api: headers
-                    for api, headers in settings.auth.openapi.api_to_headers.items()
+                    for api, headers in (oa.get("api_to_headers") or {}).items()
                 },
             )
         rapidapi = None
-        if settings.auth.rapidapi:
+        if ra := settings.auth.get("rapidapi"):
             rapidapi = RapidApiAuthContext(
-                rapidapi_key=settings.auth.rapidapi.rapidapi_key,
+                rapidapi_key=ra.rapidapi_key,
                 host_to_headers={
                     name: headers
-                    for name, headers in settings.auth.rapidapi.host_to_headers.items()
+                    for name, headers in (ra.get("host_to_headers") or {}).items()
                 },
             )
         return StandardAuthContext(openapi=openapi, rapidapi=rapidapi)
