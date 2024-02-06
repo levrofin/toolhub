@@ -40,7 +40,7 @@ Why did we build this instead of just using one of the following?
 Toolhub can be installed via pip:
 
 ```
-pip install toolhub@git+https://github.com/levrofin/toolhub@61b20b5ba283785525640927b6b12911b1dcd836
+pip install toolhub==0.1.0
 ```
 
 # How to use

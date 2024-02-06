@@ -4,6 +4,13 @@ version = "0.1.0"
 description = "A library that manages tools for function-calling LLMs."
 authors = ["Levro"]
 readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+repository = "https://github.com/levrofin/toolhub"
+homepage = "https://github.com/levrofin/toolhub"
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
