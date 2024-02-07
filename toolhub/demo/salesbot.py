@@ -34,7 +34,7 @@ def run(
     query: str | None,
 ) -> None:
   if not query:
-    query = "Can you get me a list of emails for CFOs at 3 5000+ employee companies in the US? Make sure their emails are valid"
+    query = "Using function calls, can you get me a list of emails for CFOs at 3 5000+ employee companies in the US? Make sure their emails are valid"
     _run(query)
 
 
