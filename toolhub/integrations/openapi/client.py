@@ -37,7 +37,7 @@ def request(
         method=method,
         headers=headers,
         cookies={},
-        timeout=settings.openapi.timeout_s,
+        timeout=settings.get("openapi", {}).get("timeout_s", 5.0),
         params=params,
         url=url,
     )
