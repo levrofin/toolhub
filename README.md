@@ -66,17 +66,20 @@ At the moment, ToolHub implements hubs for the OpenAI chat completions and assis
 
 ```python
 from toolhub.lib import auth
-from toolhub.openai import openai_assistant_hub
 from toolhub.lib import registry
+from toolhub.integrations.rapidapi import provider as rapidapi_provider
+from toolhub.openai import openai_assistant_hub
 
 # A collection of the tools that we want the registry to support.
 # For example, this registry supports:
 # 1. All Alpha Vantage endpoints, and
 # 2. The Yelp business search endpoint.
-registry_ = registry.Registry.standard(
-	filter_rapidapi_api_hostnames=["https://alpha-vantage12.p.rapidapi.com/"],
-  filter_rapidapi_endpoint_urls=["[https://yelp-reviews.p.rapidapi.com/business-search](https://yelp-reviews.p.rapidapi.com/business-search)"],
-)
+registry_ = registry.Registry([
+    rapidapi_provider.Provider.standard(
+	    filter_rapidapi_api_hostnames=["https://alpha-vantage12.p.rapidapi.com/"],
+        filter_rapidapi_endpoint_urls=["[https://yelp-reviews.p.rapidapi.com/business-search](https://yelp-reviews.p.rapidapi.com/business-search)"],
+    )
+])
 
 auth_ctx = auth.AuthContext(rapidapi=auth.RapidApiAuthContext(rapidapi_key=<YOUR_KEY>))
 
@@ -94,10 +97,11 @@ hub_ = openai_assistant_hub.OpenAIAssistantHub(
     from toolhub.lib import auth
     from toolhub.lib import registry
     from toolhub.openai import openai_assistant_hub
+    from toolhub.standard_providers import random_provider
     
     hub_ = openai_assistant_hub.OpenAIAssistantHub(
-      registry_=registry.Registry.standard(filter_collections=['random']),
-    	auth_ctx=auth.AuthContext(),
+        registry_=registry.Registry([random_provider.Provider()]),
+        auth_ctx=auth.AuthContext(),
     )
     ```
     
@@ -112,6 +116,7 @@ For now, our OSS implementation only supports crunchbase as an example. To use c
 ```python
 from toolhub.lib import auth
 from toolhub.lib import registry
+from toolhub.integrations.openapi import provider as openapi_provider
 from toolhub.openai import openai_assistant_hub
 
 auth_ctx = auth.AuthContext(
@@ -123,7 +128,10 @@ auth_ctx = auth.AuthContext(
 )
 
 hub_ = openai_assistant_hub.OpenAIAssistantHub(
-  registry_=registry.Registry.standard(filter_collections='crunchbase'),
+    registry_=registry.Registry(
+        [openapi_provider.Provider.standard()],
+        filter_collections='crunchbase',
+    ),
 	auth_ctx=auth_ctx,
 )
 ```
@@ -248,7 +256,7 @@ We support adding any API defined in the OpenAPI format. Follow these instructio
       simple_api_loader,
       custom_api_loader,
     ])
-    registry_ = registry.Registry.standard(openapi=openapi_provider)
+    registry_ = registry.Registry([openapi_provider])
     ```
     
 6. For contributions, add the new API to `toolhub.integrations.openapi.provider::Provider.standard`.

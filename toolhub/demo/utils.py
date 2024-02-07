@@ -3,6 +3,9 @@ import openai
 from toolhub.config import settings
 from toolhub.lib import auth
 from toolhub.lib import registry
+from toolhub.integrations.openapi import provider as openapi_provider
+from toolhub.integrations.rapidapi import provider as rapidapi_provider
+from toolhub.standard_providers import random_provider
 
 
 def openai_client() -> openai.OpenAI:
@@ -20,14 +23,27 @@ def registry_(
     rapidapi_api_hostnames: str | None,
     rapidapi_endpoint_urls: str | None,
 ) -> registry.Registry:
-    return registry.Registry.standard(
-        filter_collections=(collections.split(",") if collections else None),
-        filter_rapidapi_api_hostnames=(
-            rapidapi_api_hostnames.split(",") if rapidapi_api_hostnames else None
-        ),
-        filter_rapidapi_endpoint_urls=(
-            rapidapi_endpoint_urls.split(",") if rapidapi_endpoint_urls else None
-        ),
+    return registry.Registry(
+        [
+            *(
+                [random_provider.Provider(), openapi_provider.Provider.standard()]
+                if not (rapidapi_api_hostnames or rapidapi_endpoint_urls)
+                else []
+            ),
+            rapidapi_provider.Provider.standard(
+                filter_rapidapi_api_hostnames=(
+                    rapidapi_api_hostnames.split(",")
+                    if rapidapi_api_hostnames
+                    else None
+                ),
+                filter_rapidapi_endpoint_urls=(
+                    rapidapi_endpoint_urls.split(",")
+                    if rapidapi_endpoint_urls
+                    else None
+                ),
+            ),
+        ],
+        filter_collections=collections.split(",") if collections else None,
     )
 
 
