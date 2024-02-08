@@ -76,7 +76,7 @@ from toolhub.openai import openai_assistant_hub
 # 2. The Yelp business search endpoint.
 registry_ = registry.Registry([
     rapidapi_provider.Provider.standard(
-	    filter_rapidapi_api_hostnames=["https://alpha-vantage12.p.rapidapi.com/"],
+        filter_rapidapi_api_hostnames=["https://alpha-vantage12.p.rapidapi.com/"],
         filter_rapidapi_endpoint_urls=["[https://yelp-reviews.p.rapidapi.com/business-search](https://yelp-reviews.p.rapidapi.com/business-search)"],
     )
 ])
