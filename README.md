@@ -84,26 +84,26 @@ registry_ = registry.Registry([
 auth_ctx = auth.AuthContext(rapidapi=auth.RapidApiAuthContext(rapidapi_key=<YOUR_KEY>))
 
 hub_ = openai_assistant_hub.OpenAIAssistantHub(
-  registry_=registry_,
-  auth_ctx=auth_ctx,
+    registry_=registry_,
+    auth_ctx=auth_ctx,
 )
 ```
 
 ### Local Tools
 
-1. Simply initialize the registry with the tools to be used and pass to the hub. Random is the only one supported today. 
+Simply initialize the registry with the tools to be used and pass to the hub. Random is the only one supported today. 
     
-    ```python
-    from toolhub.lib import auth
-    from toolhub.lib import registry
-    from toolhub.openai import openai_assistant_hub
-    from toolhub.standard_providers import random_provider
-    
-    hub_ = openai_assistant_hub.OpenAIAssistantHub(
-        registry_=registry.Registry([random_provider.Provider()]),
-        auth_ctx=auth.AuthContext(),
-    )
-    ```
+```python
+from toolhub.lib import auth
+from toolhub.lib import registry
+from toolhub.openai import openai_assistant_hub
+from toolhub.standard_providers import random_provider
+
+hub_ = openai_assistant_hub.OpenAIAssistantHub(
+    registry_=registry.Registry([random_provider.Provider()]),
+    auth_ctx=auth.AuthContext(),
+)
+```
     
 
 ### OpenAPI
@@ -120,11 +120,9 @@ from toolhub.integrations.openapi import provider as openapi_provider
 from toolhub.openai import openai_assistant_hub
 
 auth_ctx = auth.AuthContext(
-  openapi=auth.OpenApiAuthContext(
-    api_to_headers={
-      "crunchbase": {"X-cb-user-key": <crunchbase_key>}
-    }
-  ),
+    openapi=auth.OpenApiAuthContext(
+        api_to_headers={"crunchbase": {"X-cb-user-key": <crunchbase_key>}}
+    ),
 )
 
 hub_ = openai_assistant_hub.OpenAIAssistantHub(
@@ -132,7 +130,7 @@ hub_ = openai_assistant_hub.OpenAIAssistantHub(
         [openapi_provider.Provider.standard()],
         filter_collections='crunchbase',
     ),
-	auth_ctx=auth_ctx,
+    auth_ctx=auth_ctx,
 )
 ```
 
@@ -162,9 +160,37 @@ python3 toolhub/demo/openai_chat.py \
 As a Python library (refer to  toolhub/demo/openai_assistant.py):
 
 ```python
-# Initialize registry and auth_ctx as above, and set up the Hub.
+# Initialize the auth_ctx as explained above, e.g.
+auth_ctx = auth.StandardAuthContext(
+    openapi=auth.OpenApiAuthContext(
+        api_to_headers={"crunchbase": {"X-cb-user-key": <crunchbase_key>}}
+    ),
+    rapidapi=auth.RapidApiAuthContext(
+        rapidapi_key=<rapidapi_key>,
+        host_to_headers=None,
+    ),
+)
+
+# Initialize a registry as explained above, e.g. with multiple providers.
+registry_ = registry.Registry(
+    [
+        random_provider.Provider(),
+        openapi_provider.Provider.standard(),
+        rapidapi_provider.Provider.standard(
+            filter_rapidapi_api_hostnames=["https://alpha-vantage12.p.rapidapi.com/"],
+            filter_rapidapi_endpoint_urls=["[https://yelp-reviews.p.rapidapi.com/business-search](https://yelp-reviews.p.rapidapi.com/business-search)"],
+        ),
+    ],
+    filter_collections=[
+        "random",
+        "crunchbase",
+        "Financial.currency_converter_v2"
+    ],
+)
+
+# Set up the Hub
 hub = openai_assistant_hub.OpenAIAssistantHub(
-  registry_=registry_, auth_ctx=auth_ctx
+    registry_=registry_, auth_ctx=auth_ctx
 )
 
 # Initialize the Open API client and run
@@ -184,28 +210,28 @@ run = client.beta.threads.runs.create(
 # Set up any application logic here
 ...
 if (
-  run.status == _REQUIRES_ACTION_RUN_STATUS
-  and (tool_calls := run.required_action.submit_tool_outputs.tool_calls)
+    run.status == _REQUIRES_ACTION_RUN_STATUS
+    and (tool_calls := run.required_action.submit_tool_outputs.tool_calls)
 ):
-  tool_outputs = []
-  for tool_call_id, result in hub.call_tools({
-      tc.id: tc for tc in tool_calls
+    tool_outputs = []
+    for tool_call_id, result in hub.call_tools({
+          tc.id: tc for tc in tool_calls
 	}).items():
     if isinstance(result, hub.ToolCallErrors):
-      errors_fmt = "\\n".join(str(e) for e in result.errors)
-      tool_outputs.append(
-        openai_assistant_hub.ToolOutput(
-          tool_call_id=tool_call_id,
-          output=f"Failure:\\n{errors_fmt}",
+        errors_fmt = "\\n".join(str(e) for e in result.errors)
+        tool_outputs.append(
+            openai_assistant_hub.ToolOutput(
+                tool_call_id=tool_call_id,
+                output=f"Failure:\\n{errors_fmt}",
+            )
         )
-      )
     else:
-      tool_outputs.append(result)
-      client.beta.threads.runs.submit_tool_outputs(
-        thread_id=thread.id,
-        run_id=run_id,
-        tool_outputs=tool_outputs,
-      )
+        tool_outputs.append(result)
+        client.beta.threads.runs.submit_tool_outputs(
+            thread_id=thread.id,
+            run_id=run_id,
+            tool_outputs=tool_outputs,
+        )
 ```
 
 # Limitations
@@ -241,20 +267,20 @@ We support adding any API defined in the OpenAPI format. Follow these instructio
     _SCHEMA_PATH = <new API's schema 
     
     _BASE_URL = <new API's base URL>
-    simple_api_loader = provider.standard_api_loader(_API, _SCHEMA_PATH, _BASE_URL))
+    simple_api_loader = provider.standard_api_loader(_API, _SCHEMA_PATH, _BASE_URL)
     
     # An API which requires a custom Parser.
     _API = <new API's name>
     _BASE_URL = <new API's base URL>
     custom_api_loader = provider.ApiLoader(
-      _API,
-      _BASE_URL,
-      <custom Parser instance>,
+        _API,
+        _BASE_URL,
+        <custom Parser instance>,
     )
     
     openapi_provider = provider.Provider([
-      simple_api_loader,
-      custom_api_loader,
+        simple_api_loader,
+        custom_api_loader,
     ])
     registry_ = registry.Registry([openapi_provider])
     ```
