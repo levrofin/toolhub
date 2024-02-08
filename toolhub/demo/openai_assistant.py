@@ -12,7 +12,9 @@ from toolhub.openai import openai_assistant_hub
 
 _ASSISTANT_NAME = "Toolhub Example Assistant"
 _GPT_MODEL = "gpt-4-1106-preview"
-_INSTRUCTIONS = "You are a helpful assistant who uses tools to perform tasks."
+_INSTRUCTIONS = (
+    "You are a helpful assistant who uses only the provided tools to perform tasks."
+)
 
 
 _MAX_TOOL_ITERATIONS = 7
