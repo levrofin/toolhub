@@ -1,10 +1,19 @@
 import click
 
+import openai
+
 from toolhub.demo import openai_assistant
-from toolhub.demo import utils
+from toolhub.lib import auth
 from toolhub.lib import registry
 from toolhub.integrations.openapi import provider as openapi_provider
 from toolhub.integrations.rapidapi import provider as rapidapi_provider
+
+_ENDPOINT_URLS = [
+  'https://email-checker.p.rapidapi.com/verify/v1', # Email verifier,
+  'https://apollo-io1.p.rapidapi.com/search_people', # People Search,
+]
+
+_COLLECTIONS = ['crunchbase']
 
 
 def _run(query: str):
@@ -20,8 +29,15 @@ def _run(query: str):
         ],
         filter_collections=["crunchbase"],
     )
-    agent = openai_assistant.Agent(registry_=registry_)
-    agent(utils.auth_ctx(), query)
+    agent = openai_assistant.Agent(registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY))
+    auth_ctx = auth.StandardAuthContext(
+        openapi=auth.OpenApiAuthContext(
+            api_to_headers={"crunchbase": {"X-cb-user-key": _CRUNCHBASE_KEY}}
+        ),
+        rapidapi=auth.RapidApiAuthContext(
+            rapidapi_key=_RAPIDAPI_KEY,
+        ))
+    agent(auth_ctx, query)
 
 
 @click.command()

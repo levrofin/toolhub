@@ -2,6 +2,8 @@ import click
 import time
 from datetime import date, timedelta
 
+import openai
+
 from toolhub.demo import utils
 from toolhub.lib import auth
 from toolhub.lib import hub
@@ -42,9 +44,12 @@ class Agent:
         self,
         registry_: registry.Registry,
         assistant_id: str | None = None,
+        openai_client: openai.OpenAI | None = None,
     ):
         self.hub = openai_assistant_hub.OpenAIAssistantHub(registry_=registry_)
-        self.client = utils.openai_client()
+        if not openai_client:
+            openai_client = utils.openai_client()
+        self.client = openai_client
 
         if assistant_id:
             self.assistant = self.client.beta.assistants.retrieve(assistant_id)
@@ -76,7 +81,7 @@ class Agent:
             role="user",
             content=task,
         )
-
+        print(self.hub.tools_spec())
         run = self.client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=self.assistant.id,
