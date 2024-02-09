@@ -55,7 +55,7 @@ def _callable(
     method: str,
 ) -> Callable:
     # NOTE: separate parameter namespace for client.request and the endpoint.
-    def _impl(**params):
+    def _impl(request_body: str | None = None, **params):
         return client.request(
             api=api,
             base_url=base_url,
@@ -63,6 +63,7 @@ def _callable(
             method=method,
             auth_ctx=auth_ctx,
             params=params,
+            request_body=request_body,
         )
 
     return _impl
