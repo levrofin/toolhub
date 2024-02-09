@@ -38,7 +38,15 @@ class OpenAPIFunctionSpec(function.FunctionSpec):
 
         super().__init__(
             name=name,
-            parameters=parameters,
+            parameters=[
+                *parameters,
+                function.ParameterSpec(
+                    "post_data",
+                    str,
+                    "String containing the UTF-8 body for a POST or PUT request, if required.",
+                    False,
+                ),
+            ],
             return_=return_,
             description=description,
         )
@@ -55,7 +63,7 @@ def _callable(
     method: str,
 ) -> Callable:
     # NOTE: separate parameter namespace for client.request and the endpoint.
-    def _impl(**params):
+    def _impl(post_data: str | None = None, **params):
         return client.request(
             api=api,
             base_url=base_url,
@@ -63,6 +71,7 @@ def _callable(
             method=method,
             auth_ctx=auth_ctx,
             params=params,
+            post_data=post_data,
         )
 
     return _impl

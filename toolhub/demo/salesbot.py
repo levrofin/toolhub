@@ -2,7 +2,6 @@ import click
 
 from toolhub.demo import openai_assistant
 from toolhub.demo import utils
-from toolhub.lib import auth
 from toolhub.lib import registry
 from toolhub.integrations.openapi import provider as openapi_provider
 from toolhub.integrations.rapidapi import provider as rapidapi_provider
@@ -29,10 +28,7 @@ def _run(query: str):
 @click.option("--task", required=False)
 def run(task: str | None) -> None:
     if not task:
-        task = (
-            "Please make a list of emails for CFOs at three 5000+ employee companies in the US.\n"
-            "Make sure their emails are valid."
-        )
+        task = "Please list the business emails of CFOs at three 5000+ employee companies in the US."
         _run(task)
 
 
