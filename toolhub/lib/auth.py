@@ -30,6 +30,14 @@ class StandardAuthContext(AuthContext):
     openapi: OpenApiAuthContext | None = None
     rapidapi: RapidApiAuthContext | None = None
 
+    def __init__(
+        self,
+        openapi: OpenApiAuthContext | None = None,
+        rapidapi: RapidApiAuthContext | None = None,
+    ):
+        self.openapi = openapi
+        self.rapidapi = rapidapi
+
     @classmethod
     def from_settings(cls) -> AuthContext:
         openapi = None

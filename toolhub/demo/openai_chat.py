@@ -2,6 +2,7 @@ import click
 from datetime import date
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 
+import openai
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_param import (
     ChatCompletionMessageParam,
@@ -27,12 +28,14 @@ class Agent:
     def __init__(
         self,
         registry_: registry.Registry,
+        openai_client: openai.OpenAI | None = None,
     ):
         self.hub = openai_chat_hub.OpenAIChatHub(registry_=registry_)
         self.tools = self.hub.tools_spec()
 
-        self.client = utils.openai_client()
-
+        if not openai_client:
+            openai_client = utils.openai_client()
+        self.client = openai_client
         self.messages: list[ChatCompletionMessageParam] = []
 
     @retry(
