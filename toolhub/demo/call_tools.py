@@ -1,3 +1,5 @@
+import json
+
 from openai.types.beta.threads.required_action_function_tool_call import (
     Function,
     RequiredActionFunctionToolCall,
@@ -49,18 +51,62 @@ if __name__ == "__main__":
             type="function",
             function=Function(
                 name="crunchbase_autocompletes_get",
-                arguments='{"query": "Levro"}',
+                arguments=json.dumps({"query": "Levro"}),
             ),
         ),
         RequiredActionFunctionToolCall(
             id="tool_call_3",
             type="function",
             function=Function(
+                name="crunchbase_searches_organizations_post",
+                arguments=json.dumps(
+                    {
+                        "request_body": json.dumps(
+                            {
+                                "field_ids": ["identifier"],
+                                "order": [{"field_id": "rank_org", "sort": "asc"}],
+                                "query": [
+                                    {
+                                        "type": "predicate",
+                                        "field_id": "funding_total",
+                                        "operator_id": "between",
+                                        "values": [
+                                            {"value": 25000000, "currency": "usd"},
+                                            {"value": 100000000, "currency": "usd"},
+                                        ],
+                                    },
+                                    {
+                                        "type": "predicate",
+                                        "field_id": "location_identifiers",
+                                        "operator_id": "includes",
+                                        "values": [
+                                            "6106f5dc-823e-5da8-40d7-51612c0b2c4e"
+                                        ],
+                                    },
+                                    {
+                                        "type": "predicate",
+                                        "field_id": "facet_ids",
+                                        "operator_id": "includes",
+                                        "values": ["company"],
+                                    },
+                                ],
+                                "limit": 3,
+                            }
+                        ),
+                    }
+                ),
+            ),
+        ),
+        RequiredActionFunctionToolCall(
+            id="tool_call_4",
+            type="function",
+            function=Function(
                 name="Financial-currency_converter_v2-convert",
-                arguments='{"from":"MXN","amount":100,"to":"USD"}',
+                arguments=json.dumps({"from": "MXN", "amount": 100, "to": "USD"}),
             ),
         ),
     ]
+
     for tc, output in zip(tool_calls, hub_.call_tools(utils.auth_ctx(), tool_calls)):
         print(
             f"{tc.id}:"

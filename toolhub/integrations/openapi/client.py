@@ -16,6 +16,7 @@ def request(
     method: str,
     auth_ctx: auth.StandardAuthContext,
     params: dict[str, Any],
+    request_body: str | None,
 ) -> dict[str, Any]:
     url = f"{base_url}/{endpoint}"
 
@@ -39,6 +40,11 @@ def request(
         cookies={},
         timeout=settings.get("openapi", {}).get("timeout_s", 5.0),
         params=params,
+        data=(
+            request_body
+            if request_body and (method.upper() in ("POST", "PUT"))
+            else None
+        ),
         url=url,
     )
 

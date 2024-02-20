@@ -19,9 +19,20 @@ class ApiLoader:
 
 
 def standard_api_loader(
-    api: str, schema_path: pathlib.Path, base_url: str
+    api: str,
+    schema_path: pathlib.Path,
+    request_body_descriptions_path: pathlib.Path,
+    base_url: str,
 ) -> ApiLoader:
-    return ApiLoader(api, base_url, parser.Parser(api=api, path=schema_path))
+    return ApiLoader(
+        api,
+        base_url,
+        parser.Parser(
+            api=api,
+            schema_path=schema_path,
+            request_body_descriptions_path=request_body_descriptions_path,
+        ),
+    )
 
 
 class Provider(provider.Provider):
@@ -53,9 +64,19 @@ class Provider(provider.Provider):
     def standard(cls) -> Provider:
         return cls(
             [
-                standard_api_loader(api, schema_path, base_url)
-                for api, schema_path, base_url in (
-                    (crunchbase.API, crunchbase.SCHEMA_PATH, crunchbase.BASE_URL),
+                standard_api_loader(
+                    api,
+                    schema_path,
+                    request_body_descriptions_path,
+                    base_url,
+                )
+                for api, schema_path, request_body_descriptions_path, base_url in (
+                    (
+                        crunchbase.API,
+                        crunchbase.SCHEMA_PATH,
+                        crunchbase.REQUEST_BODY_DESCRIPTIONS_PATH,
+                        crunchbase.BASE_URL,
+                    ),
                     # NOTE: add new standard OpenAPI APIs here.
                 )
             ]

@@ -1,6 +1,7 @@
+import json
 import pathlib
 import re
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 
 import openapi_python_client
@@ -34,21 +35,24 @@ def _name_for_property(ref: str) -> str:
 
 class Parser:
     def __init__(
-        self, api: str, url: Optional[str] = None, path: Optional[pathlib.Path] = None
+        self,
+        api: str,
+        schema_url: str | None = None,
+        schema_path: pathlib.Path | None = None,
+        request_body_descriptions_path: pathlib.Path | None = None,
     ):
         self.api = api
 
-        project: openapi_python_client.Project = (
-            openapi_python_client._get_project_for_url_or_path(
-                config=cli._process_config(
-                    url=url,
-                    path=path,
-                    config_path=None,
-                    meta_type=openapi_python_client.MetaType.NONE,
-                    file_encoding="utf-8",
-                )
+        project = openapi_python_client._get_project_for_url_or_path(
+            config=cli._process_config(
+                url=schema_url,
+                path=schema_path,
+                config_path=None,
+                meta_type=openapi_python_client.MetaType.NONE,
+                file_encoding="utf-8",
             )
         )
+        assert isinstance(project, openapi_python_client.Project)
         self.models = {
             _name_for_type(model.name): model for model in project.openapi.models
         }
@@ -58,6 +62,11 @@ class Parser:
             for _, tag in project.openapi.endpoint_collections_by_tag.items()
             for endpoint in tag.endpoints
         }
+        if request_body_descriptions_path:
+            with request_body_descriptions_path.open("r") as f:
+                self.request_body_descriptions = json.load(f)
+        else:
+            self.request_body_descriptions = {}
 
     def _filter_endpoint(
         self, endpoint: dict[str, Union[schema.Schema, properties.EnumProperty]]
@@ -238,6 +247,22 @@ class Parser:
                     type_=type_,
                     description=p.get("description") or name,
                     required=str(p.get("required", "")) == "True",
+                )
+            )
+
+        if endpoint.bodies:
+            body = endpoint.bodies[0]
+            content_type = body.content_type
+            description = (
+                f"HTTP POST/PUT request body in .{content_type}.\n"
+                + self.request_body_descriptions.get(endpoint.path, "")
+            )
+            params.append(
+                function.ParameterSpec(
+                    "request_body",
+                    str,
+                    description,
+                    False,
                 )
             )
 
