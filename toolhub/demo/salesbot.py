@@ -15,9 +15,10 @@ _ENDPOINT_URLS = [
 
 _COLLECTIONS = ['crunchbase']
 
-_OPENAI_KEY = ''  # replace with your OpenAI API key"
-_RAPIDAPI_KEY = "" # Your RAPIDAPI_KEY
-_CRUNCHBASE_KEY = "" # Your CRUNCHBASE_KEY
+_OPENAI_KEY = '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'  # replace with your OpenAI API key"
+_RAPIDAPI_KEY = "60fb5f82ffmsh9e37b31665092afp190901jsn136fc839ec0a" # Your RAPIDAPI_KEY
+_CRUNCHBASE_KEY = "2b25cbc765971f2b362adaf8ae79e1fa" # Your CRUNCHBASE_KEY
+
 
 def _run(query: str):
     registry_ = registry.Registry(
@@ -25,12 +26,12 @@ def _run(query: str):
             openapi_provider.Provider.standard(),
             rapidapi_provider.Provider.standard(
                 filter_rapidapi_endpoint_urls=[
-                    "https://email-checker.p.rapidapi.com/verify/v1",  # Email verifier,
-                    "https://apollo-io1.p.rapidapi.com/search_people",  # People Search,
+                    "https://local-business-data.p.rapidapi.com/business-details",  # Email verifier,
+                    'https://local-business-data.p.rapidapi.com/search', # SendGrid,
                 ],
             ),
         ],
-        filter_collections=["crunchbase"],
+        # filter_collections=["crunchbase"],
     )
     agent = openai_assistant.Agent(registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY))
     auth_ctx = auth.StandardAuthContext(
@@ -47,7 +48,7 @@ def _run(query: str):
 @click.option("--task", required=False)
 def run(task: str | None) -> None:
     if not task:
-        task = "Please list the business emails of CFOs at three 5000+ employee companies in the US."
+        task = "Can you find the email address for 5 web design agencies in New York City?"
         _run(task)
 
 
