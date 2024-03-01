@@ -54,15 +54,14 @@ def auth_ctx() -> auth.AuthContext:
     except (AttributeError, KeyError):
         pass
 
-    rapidapi_key = "dadasdads"  # required: replace with your RapidAPI API key
+    rapidapi_key = None  # required: replace with your RapidAPI API key
     assert rapidapi_key, f"Please define your RapidAPI API key in {__file__}."
 
     crunchbase_key = None  # optional: replace with your Crunchbase API key
 
-
     return auth.StandardAuthContext(
         openapi=auth.OpenApiAuthContext(
-            api_to_headers={"crunchbase": {"X-cb-user-key": crunchbase_key}},
+            api_to_headers={"crunchbase": {"X-cb-user-key": crunchbase_key}}
         ),
         rapidapi=auth.RapidApiAuthContext(
             rapidapi_key=rapidapi_key,
