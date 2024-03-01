@@ -208,7 +208,7 @@ class Parser:
             return None
         if isinstance(r.prop, properties.ModelProperty):
             return self._describe_for_response(set(), set(), r.prop.data)
-        if isinstance(r.prop, properties.ListProperty):
+        if isinstance(r.prop, properties.ListProperty) and hasattr(r.prop.inner_property, "data"):
             return (
                 "["
                 + self._describe_for_response(set(), set(), r.prop.inner_property.data)

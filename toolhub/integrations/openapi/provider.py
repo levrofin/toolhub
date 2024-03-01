@@ -8,6 +8,7 @@ from toolhub.lib import provider
 
 from toolhub.integrations.openapi import parser
 from toolhub.integrations.openapi.function import make_function
+from toolhub.integrations.openapi.apis.alpaca import alpaca
 from toolhub.integrations.openapi.apis.crunchbase import crunchbase
 
 
@@ -36,14 +37,15 @@ def standard_api_loader(
 
 
 class Provider(provider.Provider):
-    def __init__(self, api_loaders: list[ApiLoader]):
+    def __init__(self, api_loaders: list[ApiLoader], filter_function_names=None):
         self._functions = []
         self._collections = []
         for api_loader in api_loaders:
-            fns = [
-                make_function(spec, api_loader.base_url)
-                for spec in api_loader.parser_.fn_specs()
-            ]
+            fns = []
+            for spec in api_loader.parser_.fn_specs():
+                fn = make_function(spec, api_loader.base_url)
+                if filter_function_names is None or fn.spec.name in filter_function_names:
+                    fns.append(make_function(spec, api_loader.base_url))
 
             self._functions += fns
 
@@ -53,6 +55,7 @@ class Provider(provider.Provider):
                 function_names={fn.spec.name for fn in fns},
             )
             self._collections.append(collection)
+            print(self._collections)
 
     def functions(self) -> list[function.Function]:
         return self._functions
@@ -61,7 +64,7 @@ class Provider(provider.Provider):
         return self._collections
 
     @classmethod
-    def standard(cls) -> Provider:
+    def standard(cls, filter_function_names=None) -> Provider:
         return cls(
             [
                 standard_api_loader(
@@ -77,7 +80,14 @@ class Provider(provider.Provider):
                         crunchbase.REQUEST_BODY_DESCRIPTIONS_PATH,
                         crunchbase.BASE_URL,
                     ),
+                    (
+                        alpaca.API,
+                        alpaca.SCHEMA_PATH,
+                        alpaca.REQUEST_BODY_DESCRIPTIONS_PATH,
+                        alpaca.BASE_URL,
+                    ),
                     # NOTE: add new standard OpenAPI APIs here.
                 )
-            ]
+            ], filter_function_names
+
         )

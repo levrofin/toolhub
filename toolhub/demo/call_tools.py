@@ -31,6 +31,7 @@ if __name__ == "__main__":
                 ),
             ],
             filter_collections=[
+                "alpaca",
                 "random",
                 "crunchbase",
                 "Financial.currency_converter_v2",
@@ -46,14 +47,14 @@ if __name__ == "__main__":
                 arguments='{"length":"15","charset":"abcdef"}',
             ),
         ),
-        RequiredActionFunctionToolCall(
-            id="tool_call_2",
-            type="function",
-            function=Function(
-                name="crunchbase_autocompletes_get",
-                arguments=json.dumps({"query": "Levro"}),
-            ),
-        ),
+        # RequiredActionFunctionToolCall(
+        #     id="tool_call_2",
+        #     type="function",
+        #     function=Function(
+        #         name="crunchbase_autocompletes_get",
+        #         arguments=json.dumps({"query": "Levro"}),
+        #     ),
+        # ),
         RequiredActionFunctionToolCall(
             id="tool_call_3",
             type="function",
@@ -103,6 +104,14 @@ if __name__ == "__main__":
             function=Function(
                 name="Financial-currency_converter_v2-convert",
                 arguments=json.dumps({"from": "MXN", "amount": 100, "to": "USD"}),
+            ),
+        ),
+        RequiredActionFunctionToolCall(
+            id="tool_call_5",
+            type="function",
+            function=Function(
+                name="alpaca_v2_account_get",
+                arguments="",
             ),
         ),
     ]
