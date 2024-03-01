@@ -13,7 +13,7 @@ def openai_client(openai_key=None) -> openai.OpenAI:
         try:
             openai_key = settings.openai.api_key
         except (AttributeError, KeyError):
-            openai_key = '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'  # replace with your OpenAI API key
+            openai_key = None  # replace with your OpenAI API key
 
     assert openai_key, f"Please define your OpenAI API key in {__file__}."
     return openai.OpenAI(api_key=openai_key)
