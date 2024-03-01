@@ -8,7 +8,6 @@ from toolhub.lib import function
 # TODO: use package resources.
 _PARENT_DIR = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 FUNCTIONS_FILE = os.path.join(_PARENT_DIR, "functions.json")
-SENDGRID_FILE = os.path.join(_PARENT_DIR, "sendgrid.json")
 
 
 def load_functions_collections() -> (
@@ -19,10 +18,6 @@ def load_functions_collections() -> (
 ):
     with open(FUNCTIONS_FILE, "r") as f:
         category_to_api_to_functions = jsonpickle.decode(f.read())
-    with open(SENDGRID_FILE, "r") as f:
-        sendgrid_functions = jsonpickle.decode(f.read())
-
-    category_to_api_to_functions["Email"] = sendgrid_functions["Email"]
 
     functions = []
     collections = []

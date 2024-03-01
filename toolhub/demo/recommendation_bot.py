@@ -8,20 +8,24 @@ from toolhub.lib import registry
 from toolhub.integrations.rapidapi import provider as rapidapi_provider
 
 
-_OPENAI_KEY = ''  # replace with your OpenAI API key"
-_RAPIDAPI_KEY = "" # Your RAPIDAPI_KEY
+_OPENAI_KEY = ""  # replace with your OpenAI API key"
+_RAPIDAPI_KEY = ""  # Your RAPIDAPI_KEY
+
 
 def _run(query: str):
-    registry_ = registry.Registry([
+    registry_ = registry.Registry(
+        [
             rapidapi_provider.Provider.standard(
                 filter_rapidapi_endpoint_urls=[
                     "https://local-business-data.p.rapidapi.com/business-details",
-                    'https://local-business-data.p.rapidapi.com/search',
+                    "https://local-business-data.p.rapidapi.com/search",
                 ],
             ),
         ],
     )
-    agent = openai_assistant.Agent(registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY))
+    agent = openai_assistant.Agent(
+        registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY)
+    )
     auth_ctx = auth.StandardAuthContext(
         rapidapi=auth.RapidApiAuthContext(
             rapidapi_key=_RAPIDAPI_KEY,

@@ -8,24 +8,34 @@ from toolhub.lib import registry
 from toolhub.integrations.openapi import provider as openapi_provider
 
 
-_OPENAI_KEY = ''  # replace with your OpenAI API key"
-_RAPIDAPI_KEY = "" # Your RAPIDAPI_KEY
+_OPENAI_KEY = ""  # replace with your OpenAI API key"
+_RAPIDAPI_KEY = ""  # Your RAPIDAPI_KEY
 _ALPACA_KEY_ID = ""
 _ALPACA_SECRET_KEY = ""
 
 
 def _run(query: str):
-    registry_ = registry.Registry([
-            openapi_provider.Provider.standard(filter_function_names=["alpaca_v2_orders_post"]),
+    registry_ = registry.Registry(
+        [
+            openapi_provider.Provider.standard(
+                filter_function_names=["alpaca_v2_orders_post"]
+            ),
         ],
     )
-    agent = openai_assistant.Agent(registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY))
+    agent = openai_assistant.Agent(
+        registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY)
+    )
     auth_ctx = auth.StandardAuthContext(
         rapidapi=auth.RapidApiAuthContext(
             rapidapi_key=_RAPIDAPI_KEY,
         ),
-            openapi = auth.OpenApiAuthContext(
-        api_to_headers={"alpaca": {"APCA-API-KEY-ID": _ALPACA_KEY_ID, "APCA-API-SECRET-KEY": _ALPACA_SECRET_KEY}},
+        openapi=auth.OpenApiAuthContext(
+            api_to_headers={
+                "alpaca": {
+                    "APCA-API-KEY-ID": _ALPACA_KEY_ID,
+                    "APCA-API-SECRET-KEY": _ALPACA_SECRET_KEY,
+                }
+            },
         ),
     )
     agent(auth_ctx, query)

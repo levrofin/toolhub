@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional, List
 
 import dataclasses
 import pathlib
@@ -37,7 +38,7 @@ def standard_api_loader(
 
 
 class Provider(provider.Provider):
-    def __init__(self, api_loaders: list[ApiLoader], filter_function_names=None):
+    def __init__(self, api_loaders: list[ApiLoader], filter_function_names: Optional[List[str]] = None):
         self._functions = []
         self._collections = []
         for api_loader in api_loaders:
@@ -45,7 +46,7 @@ class Provider(provider.Provider):
             for spec in api_loader.parser_.fn_specs():
                 fn = make_function(spec, api_loader.base_url)
                 if filter_function_names is None or fn.spec.name in filter_function_names:
-                    fns.append(make_function(spec, api_loader.base_url))
+                    fns.append(fn)
 
             self._functions += fns
 
@@ -55,7 +56,6 @@ class Provider(provider.Provider):
                 function_names={fn.spec.name for fn in fns},
             )
             self._collections.append(collection)
-            print(self._collections)
 
     def functions(self) -> list[function.Function]:
         return self._functions
@@ -64,7 +64,7 @@ class Provider(provider.Provider):
         return self._collections
 
     @classmethod
-    def standard(cls, filter_function_names=None) -> Provider:
+    def standard(cls, filter_function_names: Optional[List[str]] = None) -> Provider:
         return cls(
             [
                 standard_api_loader(

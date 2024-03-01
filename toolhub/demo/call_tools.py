@@ -47,14 +47,14 @@ if __name__ == "__main__":
                 arguments='{"length":"15","charset":"abcdef"}',
             ),
         ),
-        # RequiredActionFunctionToolCall(
-        #     id="tool_call_2",
-        #     type="function",
-        #     function=Function(
-        #         name="crunchbase_autocompletes_get",
-        #         arguments=json.dumps({"query": "Levro"}),
-        #     ),
-        # ),
+        RequiredActionFunctionToolCall(
+            id="tool_call_2",
+            type="function",
+            function=Function(
+                name="crunchbase_autocompletes_get",
+                arguments=json.dumps({"query": "Levro"}),
+            ),
+        ),
         RequiredActionFunctionToolCall(
             id="tool_call_3",
             type="function",

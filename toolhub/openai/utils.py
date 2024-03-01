@@ -89,11 +89,9 @@ def _fn_spec_to_fn_def(fn_spec: function.FunctionSpec) -> FunctionDefinition:
     }
 
     description = fn_spec.description or ""
-    description += (
-        ". " if description else ""
-    )
-    if fn_spec.return_ and fn_spec.return_.description:
-        description += f"Returns: {fn_spec.return_.description}"
+    description += ". " if description else ""
+    if (ret := fn_spec.return_) and (desc := ret.description):
+        description += f"Returns: {desc}"
 
     rv = FunctionDefinition(
         name=fn_spec.name,
