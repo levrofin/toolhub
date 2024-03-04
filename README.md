@@ -254,7 +254,7 @@ We support adding any API defined in the OpenAPI format. Follow these instructio
     1. e.g. [https://api.swaggerhub.com/apis/Crunchbase/crunchbase-enterprise_api/1.0.3](https://api.swaggerhub.com/apis/Crunchbase/crunchbase-enterprise_api/1.0.3)
 2. At `toolhub/integrations/openapi/apis/<new_api_name>` , add the JSON schema file and a corresponding Python loader module, e.g. `toolhub/integrations/openapi/apis/crunchbase/crunchbase_v4.json` and `toolhub/integrations/openapi/apis/crunchbase/crunchbase.py`
 3. [if you need customization] In the Python loader module, implement a custom `MyParser(parser.Parser)` with `filter_endpoint` (to filter out certain functions) and/or `map_parameter` (to change certain parameters, e.g. updating descriptions).
-4. Include the new Python loader module in `toolhub/registration/openapi.py`.
+4. Include the new Python loader module in `toolhub/integrations/openapi/provider.py`.
     1. We will revamp this to support easy registration without forking the ToolHub repo.
 5. For local development, you could construct a custom `Provider`:
     

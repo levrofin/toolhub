@@ -8,11 +8,12 @@ from toolhub.integrations.rapidapi import provider as rapidapi_provider
 from toolhub.standard_providers import random_provider
 
 
-def openai_client() -> openai.OpenAI:
-    try:
-        openai_key = settings.openai.api_key
-    except (AttributeError, KeyError):
-        openai_key = None  # replace with your OpenAI API key
+def openai_client(openai_key=None) -> openai.OpenAI:
+    if not openai_key:
+        try:
+            openai_key = settings.openai.api_key
+        except (AttributeError, KeyError):
+            openai_key = None  # replace with your OpenAI API key
 
     assert openai_key, f"Please define your OpenAI API key in {__file__}."
     return openai.OpenAI(api_key=openai_key)
