@@ -23,7 +23,7 @@ class ApiLoader:
 def standard_api_loader(
     api: str,
     schema_path: pathlib.Path,
-    request_body_descriptions_path: pathlib.Path,
+    request_body_descriptions_path: Optional[pathlib.Path],
     base_url: str,
 ) -> ApiLoader:
     return ApiLoader(

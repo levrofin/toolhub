@@ -248,45 +248,60 @@ Want to overcome these limitations? Check out our premium offering at [https://w
 
 **Add an OpenAPI API**
 
-We support adding any API defined in the OpenAPI format. Follow these instructions, and please do contribute back!
+We support adding any API defined in the OpenAPI format. Follow these instructions, and please do contribute back! Refer to demo/staockbot.py for an example
 
 1. Identify and download the OpenAPI JSON schema to build against.
-    1. e.g. [https://api.swaggerhub.com/apis/Crunchbase/crunchbase-enterprise_api/1.0.3](https://api.swaggerhub.com/apis/Crunchbase/crunchbase-enterprise_api/1.0.3)
-2. At `toolhub/integrations/openapi/apis/<new_api_name>` , add the JSON schema file and a corresponding Python loader module, e.g. `toolhub/integrations/openapi/apis/crunchbase/crunchbase_v4.json` and `toolhub/integrations/openapi/apis/crunchbase/crunchbase.py`
-3. [if you need customization] In the Python loader module, implement a custom `MyParser(parser.Parser)` with `filter_endpoint` (to filter out certain functions) and/or `map_parameter` (to change certain parameters, e.g. updating descriptions).
-4. Include the new Python loader module in `toolhub/integrations/openapi/provider.py`.
-    1. We will revamp this to support easy registration without forking the ToolHub repo.
-5. For local development, you could construct a custom `Provider`:
-    
+    1. e.g. [https://github.com/alpacahq/alpaca-docs/blob/master/oas/trading/openapi.yaml](https://github.com/alpacahq/alpaca-docs/blob/master/oas/trading/openapi.yaml)
+2. Define a Python loader for this API - you'll need the OpenAPI schema and the base URL. The standard API loader in toolhub.integrations.openapi should work in most cases. 
+    1. [if you need customization] In the Python loader module, implement a custom `MyParser(parser.Parser)` with `filter_endpoint` (to filter out certain functions) and/or `map_parameter` (to change certain parameters, e.g. updating descriptions).
+3. Construct a registry with this loader, and any other loaders you need. You may optionally filter the functions to a subset you'd like to support 
     ```python
-    from toolhub.integrations.openapi import provider
-    from toolhub.lib import registry
-    
-    # A simple API which doesn't require a custom Parser.
-    _API = <new API's name>
-    _SCHEMA_PATH = <new API's schema 
-    
-    _BASE_URL = <new API's base URL>
-    simple_api_loader = provider.standard_api_loader(_API, _SCHEMA_PATH, _BASE_URL)
-    
-    # An API which requires a custom Parser.
-    _API = <new API's name>
-    _BASE_URL = <new API's base URL>
-    custom_api_loader = provider.ApiLoader(
-        _API,
-        _BASE_URL,
-        <custom Parser instance>,
+    SCHEMA_PATH = pathlib.Path(
+        os.path.join(os.path.dirname(__file__), "alpaca.yaml")
     )
-    
-    openapi_provider = provider.Provider([
-        simple_api_loader,
-        custom_api_loader,
-    ])
-    registry_ = registry.Registry([openapi_provider])
+    BASE_URL = 'https://paper-api.alpaca.markets'
+    alpaca_api_loader = openapi_provider.standard_api_loader(
+        api="alpaca",
+        schema_path=SCHEMA_PATH,
+        request_body_descriptions_path=None,
+        base_url=BASE_URL,
+    )
+    registry_ = registry.Registry(
+        [
+            openapi_provider.Provider(
+                api_loaders=[alpaca_api_loader],
+                filter_function_names=["alpaca_v2_orders_post"]
+            ),
+            rapidapi_provider.Provider.standard(
+                filter_rapidapi_endpoint_urls=[ # Any other RapidAPI endpoints you want to support
+                    "https://alpha-vantage12.p.rapidapi.com/",
+                    "https://yelp-reviews.p.rapidapi.com/business-search",
+                ],
     ```
-    
-6. For contributions, add the new API to `toolhub.integrations.openapi.provider::Provider.standard`.
-7. Test that the API works end-to-end by adding a tool call to `toolhub/demo/call_tools.py`.
+4. Construct an authcontext with the correct credentials 
+    ```python
+       auth_ctx = auth.StandardAuthContext(
+        rapidapi=auth.RapidApiAuthContext(
+            rapidapi_key=_RAPIDAPI_KEY,
+        ),
+        openapi=auth.OpenApiAuthContext(
+            api_to_headers={
+                "alpaca": {
+                    "APCA-API-KEY-ID": _ALPACA_KEY_ID,
+                    "APCA-API-SECRET-KEY": _ALPACA_SECRET_KEY,
+                }
+            },
+        ),
+    )
+    ```
+
+5. Use this auth context with an agent and pass in any queries
+    ```python
+    agent = openai_assistant.Agent(
+        registry_=registry_, openai_client=openai.OpenAI(api_key=_OPENAI_KEY)
+    )
+    agent(auth_ctx, query)
+    ```
 
 This will enable your LLM to access any APIs, including internal ones.  
 
