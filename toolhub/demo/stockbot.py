@@ -35,8 +35,7 @@ def _run(query: str):
             ),
             rapidapi_provider.Provider.standard(
                 filter_rapidapi_endpoint_urls=[
-                    "https://local-business-data.p.rapidapi.com/business-details",
-                    "https://local-business-data.p.rapidapi.com/search",
+                    'https://last10k-company-v1.p.rapidapi.com/v1/company/income',
                 ],
             ),
 
@@ -66,7 +65,7 @@ def _run(query: str):
 @click.option("--task", required=False)
 def run(task: str | None) -> None:
     if not task:
-        task = "Can you place an order for 5 shares of AAPL at the market price?"
+        task = "Get the latest EPS for Google, and either buy or short based on the sentiment"
         _run(task)
 
 
