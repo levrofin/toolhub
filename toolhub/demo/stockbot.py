@@ -65,7 +65,7 @@ def _run(query: str):
 @click.option("--task", required=False)
 def run(task: str | None) -> None:
     if not task:
-        task = "Get the latest EPS for Google, and either buy or short based on the sentiment"
+        task = "Get the latest EPS for Google, and either buy or short 5 shares based on the sentiment"
         _run(task)
 
 
