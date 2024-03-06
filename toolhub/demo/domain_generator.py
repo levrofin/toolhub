@@ -39,7 +39,7 @@ def _run(query: str):
 @click.option("--task", required=False)
 def run(task: str | None) -> None:
     if not task:
-        task = "Can you generate 5 domain names for an AI project, and check to see if they are available?"
+        task = "Generate 5 domain names for a startup that creates meal plans for exotic animals and check to see if they are available"
         _run(task)
 
 
