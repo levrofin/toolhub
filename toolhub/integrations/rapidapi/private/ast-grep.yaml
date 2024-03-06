@@ -1,0 +1,29 @@
+id: funcdef
+language: py
+rule:
+  pattern: |
+    def $NAME($$$PARAMS, toolbench_rapidapi_key: str=$_):
+      $DOCSTRING
+      url = $URL_FSTRING
+      querystring = $QUERYSTRING_DICT
+      $$$QUERYSTRING_EXTRA
+      headers = {
+            "X-RapidAPI-Key": toolbench_rapidapi_key,
+            "X-RapidAPI-Host": $ROOT_URL
+      }
+
+      response = requests.get(url, headers=headers, params=querystring)
+
+      try:
+          observation = response.json()
+      except:
+          observation = response.text
+      return observation
+fix: |
+  "$NAME": {
+    "params": "$$$PARAMS",
+    "url": $URL_FSTRING,
+    "root_url": $ROOT_URL,
+    "querystring": $QUERYSTRING_DICT,
+    "querystring_extra": "$$$QUERYSTRING_EXTRA",
+  }

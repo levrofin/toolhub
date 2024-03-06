@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "toolhub"
+version = "0.1.0"
+description = "A library that manages tools for function-calling LLMs."
+authors = ["Levro"]
+readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+repository = "https://github.com/levrofin/toolhub"
+homepage = "https://github.com/levrofin/toolhub"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "8.1.7"
+distro = "1.9.0"
+dynaconf = "3.2.4"
+httpx = "0.26.0"
+jsonpickle = "3.0.2"
+openai = "1.2.1"
+openapi-python-client = "0.17.2"
+pydantic = "2.5.3"
+tenacity = "8.2.3"
+typing-extensions = "^4.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
